@@ -54,7 +54,7 @@ curl -X POST https://<YOUR_DOMAIN>/api/checkins \
 
 `launchd` を用いることで、上記のチェックインコマンドを定期実行できます。
 
-1. `dev.yokohama.tsukuba.plist` をダウンロードします
+1. `dev.kyudai.plist` をダウンロードします
 2. `$YOUR_TOKEN` を自分のトークンに書き換えます
 3. チェックイン先 URL を `https://<YOUR_DOMAIN>/api/checkins` に書き換えます
 4. `~/Library/LaunchAgents` に保存します
