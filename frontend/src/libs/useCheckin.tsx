@@ -3,7 +3,7 @@ import type { Checkin } from "./api";
 import dayjs from "dayjs";
 
 export const isInternal = (locationId: string) => {
-  return locationId === "utsukuba";
+  return locationId === "kyudai";
 };
 
 export const getDateKey = (year: number, month: number, day: number) => {

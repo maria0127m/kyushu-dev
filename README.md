@@ -1,6 +1,6 @@
 # tsukuba.yokohama.dev
 
-筑波大学にいるかいないかを記録・公開する Web サイト
+九州大学にいるかいないかを記録・公開する Web サイト
 
 <https://tsukuba.yokohama.dev>
 
