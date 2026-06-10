@@ -128,7 +128,7 @@ const UserPage = () => {
                   }
                 />
                 現在：
-                {isInternal(lastCheckin.location) ? "筑波大学" : "学外"}
+                {isInternal(lastCheckin.location) ? "九州大学" : "学外"}
                 <br />
                 <LastUpdate>最終更新：{lastCheckin.date}</LastUpdate>
                 <TweetAnchor onClick={tweet}>（ツイート）</TweetAnchor>

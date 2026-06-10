@@ -130,7 +130,7 @@ const TopPage = () => {
               : "inactive";
           const statusText =
             status === "internal"
-              ? "筑波大学"
+              ? "九州大学"
               : status === "others"
               ? "学外"
               : "不明";
