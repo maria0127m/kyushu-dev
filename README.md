@@ -23,7 +23,7 @@ https://kyushu-dev.kyudai.workers.dev/@screenname
 例：
 
 ```text
-https://kyushu-dev.kyudai.workers.dev/@murai
+https://kyushu-dev.kyudai.workers.dev/@maria
 ```
 
 ## 判定方法
