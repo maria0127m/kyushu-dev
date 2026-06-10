@@ -88,7 +88,7 @@ const UserPage = () => {
     } else {
       message = `${user.name}の記録はありません`;
     }
-    const messageWithUrl = `${message}\nhttps://tsukuba.yokohama.dev/@${user.screenName}`;
+    const messageWithUrl = `${message}\nhttps://<YOUR_DOMAIN>/@${user.screenName}`;
     const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
       messageWithUrl
     )}`;

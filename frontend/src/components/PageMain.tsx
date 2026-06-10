@@ -76,8 +76,8 @@ const PageMain = ({ wrapperRef, ref }: PageMainProps) => {
             </HomeLink>
             <a onClick={scrollToTop}>上スクロールで登録／サインイン</a>
           </Left>
-          <a href="https://github.com/inaniwaudon/tsukuba-yokohama-dev">
-            GitHub ／ 使い方
+          <a href="https://github.com/maria0127m/kyushu-dev">
+            GitHub / 使い方
           </a>
         </Header>
         <Routes>

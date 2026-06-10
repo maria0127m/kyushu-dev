@@ -123,7 +123,7 @@ const TopPage = () => {
       <List>
         {allUsers.map((user) => {
           const status =
-            user.latestLocationId === "utsukuba"
+            user.latestLocationId === "kyudai"
               ? "internal"
               : user.latestLocationId === "others"
               ? "others"
