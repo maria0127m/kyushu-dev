@@ -9,16 +9,15 @@ import {
 } from "../libs/api";
 
 const Wrapper = styled.div`
-  width: calc(100% - 64px);
+  width: 100%;
   max-width: 800px;
   min-height: auto;
   flex-shrink: 0;
   margin: 0 auto;
-  padding: 24px 0 16px 0;
+  padding-top: 0;
   flex-direction: column;
   background: #fff;
   box-sizing: border-box;
-  scroll-snap-align: start;
 `;
 
 const FormWrapper = styled.div`
