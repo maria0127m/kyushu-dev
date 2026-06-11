@@ -1,6 +1,6 @@
 # kyushu-dev
 
-九州大学の学内ネットワークにいるかどうかを記録・公開する Web サイトです。
+九州大学の学内ネットワークにいるかどうかを記録・表示する Web サイトです。
 
 公開URL：
 
@@ -14,7 +14,7 @@ https://kyushu-dev.kyudai.workers.dev
 
 九州大学の学内ネットワークから定期的にチェックインすることで、各ユーザーが現在九州大学内にいるかどうかを記録・表示する Web アプリです。
 
-各ユーザーのページは、以下の形式で表示されます。
+各ユーザーのページは以下の形式で表示されます。
 
 ```text
 https://kyushu-dev.kyudai.workers.dev/@screenname
@@ -23,7 +23,7 @@ https://kyushu-dev.kyudai.workers.dev/@screenname
 例：
 
 ```text
-https://kyushu-dev.kyudai.workers.dev/@maria
+https://kyushu-dev.kyudai.workers.dev/@murai
 ```
 
 ## 判定方法
@@ -33,6 +33,22 @@ https://kyushu-dev.kyudai.workers.dev/@maria
 * VPN 経由の場合、出口 IP が `133.5.0.0/16` でなければ学外判定になります
 * 判定にはアクセス元 IP を使いますが、IP アドレス自体は保存しません
 * 保存されるのは「九州大学内」または「学外」という判定結果です
+
+## プライバシーと閲覧範囲
+
+このアプリは、利用者の在学・在室・所在に近い情報を扱う可能性があります。
+
+そのため、運用方針は以下の通りです。
+
+* 初回登録は九州大学の学内ネットワークからのみ可能です
+* 「みんなのきろく」は、登録済みユーザーのみ閲覧できます
+* 各ユーザーは公開設定を変更できます
+
+  * 公開
+  * 学内限定
+  * 非公開
+* IP アドレス自体は保存しません
+* チェックイン用トークンは秘密情報として扱ってください
 
 ## 初めて使う人向け：利用開始手順
 
@@ -46,7 +62,9 @@ https://kyushu-dev.kyudai.workers.dev
 
 ### 2. アカウントを作成する
 
-トップページの登録フォームから、以下を入力して登録します。
+九州大学の学内Wi-Fi、または学内ネットワークにつないだ状態で、アカウントを作成します。
+
+登録時に入力するもの：
 
 * ID
 * 名前
@@ -71,11 +89,17 @@ https://kyushu-dev.kyudai.workers.dev/@murai
 * トークンは他人に見せないでください
 * GitHubやSNSに貼らないでください
 * スクリーンショットに写さないようにしてください
-* 漏れた可能性がある場合は、ページ上部の設定からトークンを再発行してください
+* 漏れた可能性がある場合は、アカウント設定からトークンを再発行してください
+
+### 4. サインインする
+
+別のブラウザや別の端末で使う場合は、発行済みのトークンを使ってサインインします。
+
+アカウントを作り直す必要はありません。
 
 ## 手動でチェックインする方法
 
-PowerShellやターミナルから、以下を実行します。
+ターミナル、PowerShell、コマンドプロンプトなどから、以下を実行します。
 
 ```bash
 curl -X POST "https://kyushu-dev.kyudai.workers.dev/api/checkins" \
@@ -96,7 +120,7 @@ curl.exe -X POST "https://kyushu-dev.kyudai.workers.dev/api/checkins" -H "Author
 {"count":1}
 ```
 
-このあと自分のページを再読み込みすると、最終更新時刻が変わります。
+そのあと自分のページを再読み込みすると、最終更新時刻が変わります。
 
 ## Windowsで自動チェックインする方法
 
@@ -104,20 +128,26 @@ Windowsでは、PowerShellスクリプトとタスクスケジューラを使っ
 
 ### 1. スクリプト用フォルダを作る
 
-以下の場所にフォルダを作ります。
+エクスプローラーで、以下のようなフォルダを作ります。
+
+```text
+C:\Users\<USERNAME>\kyushu-checkin
+```
+
+`<USERNAME>` は自分のWindowsユーザー名に置き換えてください。
+
+例：
 
 ```text
 C:\Users\maria\kyushu-checkin
 ```
 
-自分のユーザー名が `maria` ではない場合は、自分のユーザー名に置き換えてください。
-
 ### 2. チェックイン用スクリプトを作る
 
-以下のファイルを作成します。
+以下のファイルを作ります。
 
 ```text
-C:\Users\maria\kyushu-checkin\kyushu-checkin.ps1
+C:\Users\<USERNAME>\kyushu-checkin\kyushu-checkin.ps1
 ```
 
 中身は以下です。
@@ -141,7 +171,7 @@ Invoke-RestMethod `
 PowerShellで以下を実行します。
 
 ```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File "C:\Users\maria\kyushu-checkin\kyushu-checkin.ps1"
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$env:USERPROFILE\kyushu-checkin\kyushu-checkin.ps1"
 ```
 
 エラーが出なければ成功です。
@@ -153,14 +183,14 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File "C:\Users\maria\kyushu-c
 自動実行のたびにPowerShell画面が出るのを防ぐため、以下のファイルを作ります。
 
 ```text
-C:\Users\maria\kyushu-checkin\run-hidden.vbs
+C:\Users\<USERNAME>\kyushu-checkin\run-hidden.vbs
 ```
 
 中身は以下です。
 
 ```vbscript
 Set WshShell = CreateObject("WScript.Shell")
-WshShell.Run "powershell.exe -NoProfile -ExecutionPolicy Bypass -File ""C:\Users\maria\kyushu-checkin\kyushu-checkin.ps1""", 0, False
+WshShell.Run "powershell.exe -NoProfile -ExecutionPolicy Bypass -File """ & CreateObject("WScript.Shell").ExpandEnvironmentStrings("%USERPROFILE%") & "\kyushu-checkin\kyushu-checkin.ps1""", 0, False
 ```
 
 ### 5. タスクスケジューラに登録する
@@ -168,7 +198,7 @@ WshShell.Run "powershell.exe -NoProfile -ExecutionPolicy Bypass -File ""C:\Users
 PowerShellで以下を実行します。
 
 ```powershell
-$script = "C:\Users\maria\kyushu-checkin\run-hidden.vbs"
+$script = "$env:USERPROFILE\kyushu-checkin\run-hidden.vbs"
 
 $action = New-ScheduledTaskAction `
   -Execute "wscript.exe" `
@@ -177,23 +207,24 @@ $action = New-ScheduledTaskAction `
 $trigger = New-ScheduledTaskTrigger `
   -Once `
   -At (Get-Date).AddMinutes(1) `
-  -RepetitionInterval (New-TimeSpan -Minutes 10) `
+  -RepetitionInterval (New-TimeSpan -Minutes 5) `
   -RepetitionDuration (New-TimeSpan -Days 3650)
 
 $settings = New-ScheduledTaskSettingsSet `
   -AllowStartIfOnBatteries `
   -DontStopIfGoingOnBatteries `
-  -StartWhenAvailable
+  -StartWhenAvailable `
+  -ExecutionTimeLimit (New-TimeSpan -Minutes 1)
 
 Register-ScheduledTask `
   -TaskName "KyushuDevCheckin" `
   -Action $action `
   -Trigger $trigger `
   -Settings $settings `
-  -Description "Check in to kyushu-dev every 10 minutes"
+  -Description "Check in to kyushu-dev every 5 minutes"
 ```
 
-これで、PCが起動している間は10分ごとに自動チェックインされます。
+これで、PCが起動している間は5分ごとに自動チェックインされます。
 
 ### 6. タスクを手動で実行する
 
@@ -201,10 +232,18 @@ Register-ScheduledTask `
 Start-ScheduledTask -TaskName "KyushuDevCheckin"
 ```
 
-### 7. タスクを確認する
+### 7. タスクの状態を確認する
 
 ```powershell
-Get-ScheduledTask -TaskName "KyushuDevCheckin"
+Get-ScheduledTaskInfo -TaskName "KyushuDevCheckin"
+```
+
+確認するポイント：
+
+```text
+LastRunTime      : 最後に実行された時刻
+LastTaskResult   : 0 なら成功
+NextRunTime      : 次に実行される予定時刻
 ```
 
 ### 8. 自動チェックインを止める
@@ -213,6 +252,12 @@ Get-ScheduledTask -TaskName "KyushuDevCheckin"
 
 ```powershell
 Disable-ScheduledTask -TaskName "KyushuDevCheckin"
+```
+
+再開する場合：
+
+```powershell
+Enable-ScheduledTask -TaskName "KyushuDevCheckin"
 ```
 
 完全に削除する場合：
@@ -243,6 +288,12 @@ $YOUR_TOKEN
 
 を、自分のトークンに置き換えます。
 
+チェックイン先URLは以下です。
+
+```text
+https://kyushu-dev.kyudai.workers.dev/api/checkins
+```
+
 ### 3. `LaunchAgents` に保存する
 
 ```bash
@@ -257,35 +308,61 @@ launchctl load ~/Library/LaunchAgents/dev.kyudai.plist
 
 これで定期的にチェックインされます。
 
-## サインインについて
+停止する場合：
 
-ブラウザのCookieはURLごとに別管理されます。
+```bash
+launchctl unload ~/Library/LaunchAgents/dev.kyudai.plist
+```
 
-そのため、URLが変わった場合やブラウザを変えた場合は、再度サインインが必要になることがあります。
+## よくあるトラブル
 
-ただし、アカウント作成をやり直す必要はありません。
+### サイトで「現在：不明」になる
 
-登録済みのユーザーは、発行済みのトークンを使ってサインインしてください。
+最後のチェックインから時間が経っている可能性があります。
 
-## 設定の変更
+自動チェックインが動いているか確認してください。
 
-自分のページ上部を開くと、以下を変更できます。
+Windowsの場合：
 
-* 名前
-* ひとこと
-* 公開設定
-* 一覧への表示
-* 過去記録の表示
-* トークン再発行
+```powershell
+Get-ScheduledTaskInfo -TaskName "KyushuDevCheckin"
+```
 
-## 注意事項
+`LastTaskResult` が `0` なら、直近の実行は成功しています。
 
-* トークンは秘密情報です
-* トークンをGitHubにpushしないでください
-* 研究室や知人に配布する場合も、自分のトークンは共有しないでください
-* 自動チェックインは、PCが起動している間だけ動きます
-* PCがスリープ中、電源OFF中、ネットワーク未接続の場合は実行されません
-* 九大学内ネットワーク外で実行されると、学外として記録されます
+### PowerShellのウィンドウが毎回出る
+
+`run-hidden.vbs` 経由で実行する設定にしてください。
+
+タスクスケジューラの実行対象が `powershell.exe` ではなく、`wscript.exe` になっていれば、基本的にウィンドウは出ません。
+
+### `curl` がうまく動かない
+
+Windows PowerShellでは `curl` が別コマンドとして解釈されることがあります。
+
+以下のように `curl.exe` を使ってください。
+
+```powershell
+curl.exe -X POST "https://kyushu-dev.kyudai.workers.dev/api/checkins" -H "Authorization: <YOUR_TOKEN>"
+```
+
+### サブドメイン変更後に更新されなくなった
+
+`kyushu-checkin.ps1` の中のURLが古い可能性があります。
+
+以下になっているか確認してください。
+
+```powershell
+$url = "https://kyushu-dev.kyudai.workers.dev/api/checkins"
+```
+
+### トークンを再発行したら更新されなくなった
+
+`kyushu-checkin.ps1` の中のトークンも新しいものに変更してください。
+
+```powershell
+$token = "<YOUR_TOKEN>"
+```
 
 ## 開発者向け：構成
 
@@ -350,7 +427,7 @@ git push origin main
 `hono` フォルダ内にいる状態で `frontend` の変更を追加したい場合は、例えば以下のように指定します。
 
 ```bash
-git add ../frontend/index.html ../frontend/src/components/UserPage.tsx
+git add ../frontend/src/components/TopPage.tsx
 ```
 
 ## ライセンス
