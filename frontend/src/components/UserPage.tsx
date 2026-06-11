@@ -47,14 +47,20 @@ const P = styled.p`
   margin: 0 0 16px 0;
 `;
 
-const TweetAnchor = styled.a`
-  color: #999;
+const TweetButton = styled.button`
+  color: inherit;
+  font: inherit;
   text-decoration: none;
-  text-underline-offset: 4px;
+  padding: 5px 10px;
+  border: solid 1px #eee;
+  border-radius: 999px;
+  background: #fff;
   cursor: pointer;
+  margin-left: 8px;
 
   &:hover {
     text-decoration: underline;
+    text-underline-offset: 4px;
   }
 `;
 
@@ -131,7 +137,9 @@ const UserPage = () => {
                 {isInternal(lastCheckin.location) ? "九州大学" : "学外"}
                 <br />
                 <LastUpdate>最終更新：{lastCheckin.date}</LastUpdate>
-                <TweetAnchor onClick={tweet}>（ツイート）</TweetAnchor>
+                <TweetButton type="button" onClick={tweet}>
+                  🕊 ツイート
+                </TweetButton>
               </>
             ) : (
               <>
@@ -143,14 +151,18 @@ const UserPage = () => {
                   {isInternal(lastCheckin.location)
                     ? "九州大学"
                     : "学外"} ／ {lastCheckin.date}
-                  <TweetAnchor onClick={tweet}>（ツイート）</TweetAnchor>
+                  <TweetButton type="button" onClick={tweet}>
+                  🕊 ツイート
+                </TweetButton>
                 </LastUpdate>
               </>
             )
           ) : (
             <>
-              <StatusCircle status="inactive" />
-              記録なし<TweetAnchor onClick={tweet}>（ツイート）</TweetAnchor>
+              記録なし
+              <TweetButton type="button" onClick={tweet}>
+                🕊 ツイート
+              </TweetButton>
             </>
           )}
         </Status>
