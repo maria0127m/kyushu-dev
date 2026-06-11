@@ -20,6 +20,8 @@ https://kyushu-dev.kyudai.workers.dev
  <span style="font-size: 11px; color: #777;">
  <p><small>　オレンジ：学内　／　グレー：学外　／　グレー：記録なし   </small></p>
  </span>
+  <br />
+  <br />
 </div>
 　
 　
