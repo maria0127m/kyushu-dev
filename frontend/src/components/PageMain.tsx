@@ -60,7 +60,6 @@ const PageMain = () => {
         <NavButtons>
           <Link to="/">ホーム</Link>
           {me && <Link to={`/@${me.screenName}`}>自分のページ</Link>}
-          <Link to="/#everyone">みんなの記録</Link>
           <Link to="/settings">アカウント設定／サインイン</Link>
           <a href="https://github.com/maria0127m/kyushu-dev">
             GitHub / 使い方
