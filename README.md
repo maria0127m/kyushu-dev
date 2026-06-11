@@ -146,7 +146,7 @@ C:\Users\<USERNAME>\kyushu-checkin
 例：
 
 ```text
-C:\Users\maria\kyushu-checkin
+C:\Users\murai\kyushu-checkin
 ```
 
 ### 2. チェックイン用スクリプトを作る
