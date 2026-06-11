@@ -11,7 +11,7 @@ import {
   hashToken,
   setCookieToken,
 } from "../libs/token";
-import { Bindings, screenNameRegexStr } from "../libs/utils";
+import { Bindings, getIP, isInternalIP, screenNameRegexStr } from "../libs/utils";
 
 // 認証が不要なエンドポイント
 export const usersMePublic = new Hono<{ Bindings: Bindings }>();
@@ -29,6 +29,18 @@ const postParamSchema = z.object({
 usersMePublic.post("/", zValidator("json", postParamSchema), async (c) => {
   const { screenName, name, message, visibility, listed, displaysPast } =
     c.req.valid("json");
+
+  const ip = getIP(c);
+
+  if (!isInternalIP(ip)) {
+    return c.json(
+      {
+        error: "Registration is allowed only from Kyushu University network",
+        type: "INTERNAL_ONLY",
+      },
+      403
+    );
+  }
 
   // ID の重複をチェック
   const user = await fetchUser(

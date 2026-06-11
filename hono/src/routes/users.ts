@@ -24,7 +24,7 @@ const isVisible = (visibility: string, ip: string) => {
   return visibility === "public" || (isInternal && visibility === "internal");
 };
 
-app.get("/", async (c) => {
+app.get("/", authMiddleware(true, "cookie"), async (c) => {
   const { year, month, day, hours } = getNow();
   const results = await fetchAllUsers(c.env.DB, {
     year,
