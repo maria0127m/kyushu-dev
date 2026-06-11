@@ -105,7 +105,7 @@ const TopPage = () => {
         const fontSize = Math.floor(targetCanvas.width / canvas.width);
         targetCtx.font = `${fontSize}px "Noto Sans Mono"`;
 
-        const charMap = ["九", "#", "A", "?", "–", " "];
+        const charMap = ["●", "#", "A", "?", "–", " "];
 
         // アスキーアートに変換
         for (let y = 0; y < canvas.height; y++) {
