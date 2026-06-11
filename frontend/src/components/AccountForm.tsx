@@ -11,10 +11,10 @@ import {
 const Wrapper = styled.div`
   width: calc(100% - 64px);
   max-width: 800px;
-  min-height: calc(60dvh - 40px);
+  min-height: auto;
   flex-shrink: 0;
-  margin: 0 auto 0 auto;
-  padding-top: 24px;
+  margin: 0 auto;
+  padding: 24px 0 16px 0;
   flex-direction: column;
   background: #fff;
   box-sizing: border-box;

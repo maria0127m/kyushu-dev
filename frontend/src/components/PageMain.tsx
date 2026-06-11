@@ -1,9 +1,10 @@
+import { useEffect, useState } from "react";
 import styled from "@emotion/styled";
 import { BrowserRouter, Link, Routes, Route } from "react-router";
-import { AiFillHome } from "react-icons/ai";
 
 import TopPage from "./TopPage";
 import UserPage from "./UserPage";
+import { type User, fetchUserMe } from "../libs/api";
 
 const Wrapper = styled.div`
   width: calc(100% - 64px);
@@ -18,40 +19,29 @@ const Wrapper = styled.div`
   scroll-snap-align: start;
 `;
 
-const Header = styled.header`
-  color: #999;
-  font-size: 14px;
-  margin: 0 0 24px 0;
-  padding-bottom: 8px;
-  border-bottom: solid 1px #eee;
+const NavButtons = styled.nav`
   display: flex;
-  justify-content: space-between;
+  gap: 12px;
   flex-wrap: wrap;
-  gap: 8px;
+  margin: 0 0 24px 0;
 
-  a {
+  a,
+  button {
     color: inherit;
+    font: inherit;
     text-decoration: none;
-    text-underline-offset: 4px;
+    padding: 6px 10px;
+    border: solid 1px #eee;
+    border-radius: 999px;
+    background: #fff;
     cursor: pointer;
-    display: block;
-
-    &:hover {
-      text-decoration: underline;
-    }
   }
-`;
 
-const Left = styled.div`
-  display: flex;
-  gap: 16px;
-  align-item: center;
-`;
-
-const HomeLink = styled(Link)`
-  font-size: 16px;
-  display: flex;
-  align-items: center;
+  a:hover,
+  button:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
 `;
 
 interface PageMainProps {
@@ -60,26 +50,43 @@ interface PageMainProps {
 }
 
 const PageMain = ({ wrapperRef, ref }: PageMainProps) => {
+  const [me, setMe] = useState<User | null>(null);
+
   const scrollToTop = () => {
     if (wrapperRef.current) {
-      wrapperRef.current.scrollTo({ top: 0, behavior: "smooth" });
+      wrapperRef.current.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
     }
   };
+
+  useEffect(() => {
+    (async () => {
+      const result = await fetchUserMe();
+      if (result.type === "success") {
+        setMe(result.value);
+      } else {
+        setMe(null);
+      }
+    })();
+  }, []);
 
   return (
     <BrowserRouter>
       <Wrapper ref={ref}>
-        <Header>
-          <Left>
-            <HomeLink to="/">
-              <AiFillHome />
-            </HomeLink>
-            <a onClick={scrollToTop}>上スクロールで登録／サインイン</a>
-          </Left>
+        <NavButtons>
+          <Link to="/">ホーム</Link>
+          {me && <Link to={`/@${me.screenName}`}>自分のページ</Link>}
+          <Link to="/#everyone">みんなの記録</Link>
+          <button type="button" onClick={scrollToTop}>
+            アカウント設定／サインイン
+          </button>
           <a href="https://github.com/maria0127m/kyushu-dev">
             GitHub / 使い方
           </a>
-        </Header>
+        </NavButtons>
+
         <Routes>
           <Route path="/" element={<TopPage />} />
           <Route path="/:screenName" element={<UserPage />} />

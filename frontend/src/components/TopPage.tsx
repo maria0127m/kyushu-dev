@@ -3,10 +3,8 @@ import styled from "@emotion/styled";
 import { Link } from "react-router";
 
 import {
-  type User,
   type UserWithLatestCheckin,
   fetchAllUsers,
-  fetchUserMe,
 } from "../libs/api";
 import { StatusCircle } from "./utils";
 import tsukuba from "../assets/tsukuba2.webp";
@@ -33,25 +31,6 @@ const ListLink = styled(Link)`
   }
 `;
 
-const NavButtons = styled.nav`
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin: 0 0 24px 0;
-
-  a {
-    color: inherit;
-    text-decoration: none;
-    padding: 6px 10px;
-    border: solid 1px #eee;
-    border-radius: 999px;
-  }
-
-  a:hover {
-    text-decoration: underline;
-    text-underline-offset: 4px;
-  }
-`;
 
 const Canvas = styled.canvas`
   width: 100%;
@@ -78,7 +57,6 @@ const grayToIndex = (gray: number) => {
 
 const TopPage = () => {
   const [allUsers, setAllUsers] = useState<UserWithLatestCheckin[]>([]);
-  const [me, setMe] = useState<User | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
@@ -88,10 +66,6 @@ const TopPage = () => {
         setAllUsers(result.value);
       }
 
-      const meResult = await fetchUserMe();
-      if (meResult.type === "success") {
-        setMe(meResult.value);
-      }
     })();
   }, []);
 
@@ -155,12 +129,7 @@ const TopPage = () => {
 
   return (
     <>
-      <NavButtons>
-        <Link to="/">ホーム</Link>
-        {me && <Link to={`/@${me.screenName}`}>自分のページ</Link>}
-        <a href="#everyone">みんなの記録</a>
-      </NavButtons>
-
+      
       <H3 id="everyone">みんなのきろく</H3>
 
       <List>
