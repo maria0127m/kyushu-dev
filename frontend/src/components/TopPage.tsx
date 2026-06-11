@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "@emotion/styled";
 import { Link } from "react-router";
 
@@ -7,7 +7,7 @@ import {
   fetchAllUsers,
 } from "../libs/api";
 import { StatusCircle } from "./utils";
-import tsukuba from "../assets/tsukuba2.webp";
+import kyudaiCampus from "../assets/kyudai-campus.png";
 
 const H3 = styled.h3`
   font-size: 1em;
@@ -15,7 +15,7 @@ const H3 = styled.h3`
 `;
 
 const List = styled.ul`
-  padding-left: 20px;
+  padding-left: 0;
   list-style: none;
 `;
 
@@ -31,33 +31,14 @@ const ListLink = styled(Link)`
   }
 `;
 
-
-const Canvas = styled.canvas`
+const HeroImage = styled.img`
   width: 100%;
+  display: block;
+  margin: 8px 0 28px 0;
 `;
-
-const grayToIndex = (gray: number) => {
-  if (gray < 0.18) {
-    return 0;
-  }
-  if (gray < 0.35) {
-    return 1;
-  }
-  if (gray < 0.55) {
-    return 2;
-  }
-  if (gray < 0.75) {
-    return 3;
-  }
-  if (gray < 0.95) {
-    return 4;
-  }
-  return 5;
-};
 
 const TopPage = () => {
   const [allUsers, setAllUsers] = useState<UserWithLatestCheckin[]>([]);
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -65,72 +46,12 @@ const TopPage = () => {
       if (result.type === "success") {
         setAllUsers(result.value);
       }
-
-    })();
-  }, []);
-
-  useEffect(() => {
-    (async () => {
-      const targetCanvas = canvasRef.current;
-      if (!targetCanvas) {
-        return;
-      }
-
-      const targetScale = 300;
-      targetCanvas.width = 5 * targetScale;
-      targetCanvas.height = 2 * targetScale;
-
-      const targetCtx = targetCanvas.getContext("2d");
-      if (!targetCtx) {
-        return;
-      }
-
-      const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d");
-      const img = new Image();
-
-      img.onload = () => {
-        const orgScale = 30;
-        canvas.width = 5 * orgScale;
-        canvas.height = 2 * orgScale;
-
-        ctx?.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-        const imageData = ctx?.getImageData(0, 0, canvas.width, canvas.height);
-        if (!imageData) {
-          return;
-        }
-
-        const data = imageData.data;
-        const fontSize = Math.floor(targetCanvas.width / canvas.width);
-        targetCtx.font = `${fontSize}px "Noto Sans Mono"`;
-
-        const charMap = ["●", "#", "A", "?", "–", " "];
-
-        // アスキーアートに変換
-        for (let y = 0; y < canvas.height; y++) {
-          for (let x = 0; x < canvas.width; x++) {
-            const i = (y * canvas.width + x) * 4;
-            const gray = (data[i] + data[i + 1] + data[i + 2]) / 3 / 255;
-            const d = grayToIndex(gray);
-            const char = charMap[d];
-
-            const x0 = (targetCanvas.width / canvas.width) * x;
-            const y0 = (targetCanvas.height / canvas.height) * y;
-
-            targetCtx.fillText(char, x0, y0);
-          }
-        }
-      };
-
-      img.src = tsukuba;
     })();
   }, []);
 
   return (
     <>
-      
-      <Canvas ref={canvasRef} />
+      <HeroImage src={kyudaiCampus} alt="九州大学キャンパス" />
 
       <H3 id="everyone">みんなのきろく</H3>
 
@@ -160,8 +81,6 @@ const TopPage = () => {
           );
         })}
       </List>
-
-      
     </>
   );
 };
