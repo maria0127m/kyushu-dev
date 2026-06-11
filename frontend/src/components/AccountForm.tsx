@@ -1,7 +1,9 @@
 import styled from "@emotion/styled";
 import { useEffect, useState } from "react";
+
 import {
   createUser,
+  fetchCurrentToken,
   fetchUserMe,
   postSignin,
   postSignout,
@@ -112,6 +114,25 @@ const Button = styled.button`
   }
 `;
 
+const TokenBox = styled.textarea`
+  width: 100%;
+  min-height: 88px;
+  font-size: 12px;
+  line-height: 1.5;
+  margin-top: 8px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  resize: vertical;
+`;
+
+const TokenNote = styled.p`
+  color: #666;
+  font-size: 13px;
+  margin: 4px 0 0 0;
+`;
+
 const AccountForm = () => {
   const [registered, setRegistered] = useState<
     "registered" | "unregistered" | "loading"
@@ -125,12 +146,16 @@ const AccountForm = () => {
   >("public");
   const [displaysPast, setDisplaysPast] = useState(true);
   const [listed, setListed] = useState(false);
+
   const [token, setToken] = useState("");
+  const [currentToken, setCurrentToken] = useState("");
 
   const register = async () => {
     const result = await createUser(screenName, name);
+
     if (result.type === "success") {
       setRegistered("registered");
+      setCurrentToken("");
     } else {
       if (result.subtype === "ID_ALREADY_USED") {
         alert("指定された ID は既に使用されています");
@@ -149,6 +174,7 @@ const AccountForm = () => {
       listed,
       displaysPast
     );
+
     if (result.type === "success") {
       alert("更新しました");
     } else {
@@ -160,20 +186,53 @@ const AccountForm = () => {
     }
   };
 
+  const showCurrentToken = async () => {
+    if (currentToken) {
+      setCurrentToken("");
+      return;
+    }
+
+    const result = await fetchCurrentToken();
+
+    if (result.type === "success") {
+      setCurrentToken(result.value);
+    } else {
+      alert("トークンの取得に失敗しました");
+    }
+  };
+
+  const copyCurrentToken = async () => {
+    if (!currentToken) {
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(currentToken);
+      alert("トークンをコピーしました");
+    } catch {
+      alert("コピーに失敗しました。手動で選択してコピーしてください");
+    }
+  };
+
   const regenerateToken = async () => {
     const ok = window.confirm(
       "トークンを再発行して表示しますか？\n（現在のトークンは失効します。サインインの状態は維持されます）"
     );
+
     if (!ok) {
       return;
     }
+
+    setCurrentToken("");
     window.open("/api/users/me/token", "_blank");
   };
 
   const signin = async () => {
     const result = await postSignin(token);
+
     if (result.type === "success") {
       const user = result.value;
+
       setRegistered("registered");
       setScreenName(user.screenName);
       setName(user.name);
@@ -182,6 +241,7 @@ const AccountForm = () => {
       setDisplaysPast(user.displaysPast);
       setListed(user.listed);
       setToken("");
+      setCurrentToken("");
     } else {
       alert("サインインに失敗しました");
     }
@@ -191,12 +251,23 @@ const AccountForm = () => {
     const ok = window.confirm(
       "サインアウトしますか？\n（サインアウトする前に、必ず現在のトークンをメモしてください）"
     );
+
     if (!ok) {
       return;
     }
+
     const result = await postSignout();
+
     if (result.type === "success") {
       setRegistered("unregistered");
+      setScreenName("");
+      setName("");
+      setMessage("");
+      setVisibility("public");
+      setDisplaysPast(true);
+      setListed(false);
+      setToken("");
+      setCurrentToken("");
     } else {
       alert("サインアウトに失敗しました");
     }
@@ -205,8 +276,10 @@ const AccountForm = () => {
   useEffect(() => {
     (async () => {
       const result = await fetchUserMe();
+
       if (result.type === "success") {
         const user = result.value;
+
         setRegistered("registered");
         setScreenName(user.screenName);
         setName(user.name);
@@ -223,15 +296,20 @@ const AccountForm = () => {
   return (
     <Wrapper>
       {registered === "loading" ? (
-        <div>Loading...</div>
+        <p>Loading...</p>
       ) : (
         <>
           {registered === "registered" ? (
-            <Form onSubmit={(e) => e.preventDefault()}>
+            <Form
+              onSubmit={(e) => {
+                e.preventDefault();
+              }}
+            >
               <H2>アカウント情報</H2>
+
               <FormContent>
                 <Row>
-                  <label style={{ flexGrow: 2 }}>
+                  <label>
                     <Heading>ID（[a-zA-Z0-9_]、4–16文字）</Heading>
                     <TextBox
                       type="text"
@@ -239,7 +317,8 @@ const AccountForm = () => {
                       onChange={(e) => setScreenName(e.target.value)}
                     />
                   </label>
-                  <label style={{ flexGrow: 2 }}>
+
+                  <label>
                     <Heading>名前</Heading>
                     <TextBox
                       type="text"
@@ -247,130 +326,160 @@ const AccountForm = () => {
                       onChange={(e) => setName(e.target.value)}
                     />
                   </label>
-                  {registered === "registered" && (
-                    <label style={{ flexGrow: 3 }}>
-                      <Heading>ひとこと</Heading>
-                      <TextBox
-                        type="text"
-                        value={message}
-                        onChange={(e) => setMessage(e.target.value)}
-                      />
-                    </label>
-                  )}
                 </Row>
-                {registered === "registered" && (
-                  <>
-                    <div>
-                      <Heading>公開設定</Heading>
-                      <Visibility>
-                        <div>
-                          <label>
-                            <input
-                              type="radio"
-                              name="visibility"
-                              checked={visibility === "public"}
-                              onChange={() => setVisibility("public")}
-                            />
-                            公開
-                          </label>
-                          <label>
-                            <input
-                              type="radio"
-                              name="visibility"
-                              checked={visibility === "private"}
-                              onChange={() => setVisibility("private")}
-                            />
-                            非公開
-                          </label>
-                          <label>
-                            <input
-                              type="radio"
-                              name="visibility"
-                              checked={visibility === "internal"}
-                              onChange={() => setVisibility("internal")}
-                            />
-                            学内限定
-                          </label>
-                        </div>
-                        <div>
-                          <label>
-                            <input
-                              type="checkbox"
-                              checked={listed}
-                              onChange={(e) => setListed(e.target.checked)}
-                            />
-                            一覧に表示
-                          </label>
-                        </div>
-                        <div>
-                          <label>
-                            <input
-                              type="checkbox"
-                              checked={displaysPast}
-                              onChange={(e) =>
-                                setDisplaysPast(e.target.checked)
-                              }
-                            />
-                            過去の記録を表示
-                          </label>
-                        </div>
-                      </Visibility>
-                    </div>
-                  </>
+
+                <label>
+                  <Heading>ひとこと</Heading>
+                  <TextBox
+                    type="text"
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                  />
+                </label>
+
+                <div>
+                  <Heading>公開設定</Heading>
+
+                  <Visibility>
+                    <label>
+                      <input
+                        type="radio"
+                        checked={visibility === "public"}
+                        onChange={() => setVisibility("public")}
+                      />
+                      公開
+                    </label>
+
+                    <label>
+                      <input
+                        type="radio"
+                        checked={visibility === "private"}
+                        onChange={() => setVisibility("private")}
+                      />
+                      非公開
+                    </label>
+
+                    <label>
+                      <input
+                        type="radio"
+                        checked={visibility === "internal"}
+                        onChange={() => setVisibility("internal")}
+                      />
+                      学内限定
+                    </label>
+                  </Visibility>
+                </div>
+
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={listed}
+                    onChange={(e) => setListed(e.target.checked)}
+                  />
+                  一覧に表示
+                </label>
+
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={displaysPast}
+                    onChange={(e) => setDisplaysPast(e.target.checked)}
+                  />
+                  過去の記録を表示
+                </label>
+
+                <TokenNote>
+                  自動チェックイン設定に使う場合は、現在のトークンを表示してコピーしてください。
+                  トークンは他人に見せないでください。
+                </TokenNote>
+
+                {currentToken && (
+                  <TokenBox readOnly value={currentToken} />
                 )}
               </FormContent>
+
               <Buttons>
-                <Button onClick={update}>更新</Button>
-                <Button onClick={regenerateToken}>トークン再生成</Button>
-                <Button onClick={signout}>サインアウト</Button>
+                <Button type="button" onClick={update}>
+                  更新
+                </Button>
+
+                <Button type="button" onClick={showCurrentToken}>
+                  {currentToken ? "トークンを隠す" : "現在のトークンを表示"}
+                </Button>
+
+                {currentToken && (
+                  <Button type="button" onClick={copyCurrentToken}>
+                    トークンをコピー
+                  </Button>
+                )}
+
+                <Button type="button" onClick={regenerateToken}>
+                  トークン再生成
+                </Button>
+
+                <Button type="button" onClick={signout}>
+                  サインアウト
+                </Button>
               </Buttons>
             </Form>
           ) : (
             <FormWrapper>
-              <Form onSubmit={(e) => e.preventDefault()}>
+              <Form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                }}
+              >
                 <H2>アカウント登録</H2>
+
                 <FormContent>
-                  <Row>
-                    <label style={{ flexGrow: 2 }}>
-                      <Heading>ID（[a-z0-9_]、4–16文字）</Heading>
-                      <TextBox
-                        type="text"
-                        value={screenName}
-                        onChange={(e) => setScreenName(e.target.value)}
-                      />
-                    </label>
-                  </Row>
-                  <Row>
-                    <label style={{ flexGrow: 2 }}>
-                      <Heading>名前</Heading>
-                      <TextBox
-                        type="text"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                      />
-                    </label>
-                  </Row>
+                  <label>
+                    <Heading>ID（[a-z0-9_]、4–16文字）</Heading>
+                    <TextBox
+                      type="text"
+                      value={screenName}
+                      onChange={(e) => setScreenName(e.target.value)}
+                    />
+                  </label>
+
+                  <label>
+                    <Heading>名前</Heading>
+                    <TextBox
+                      type="text"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                    />
+                  </label>
                 </FormContent>
+
                 <Buttons>
-                  <Button onClick={register}>登録</Button>
+                  <Button type="button" onClick={register}>
+                    登録
+                  </Button>
                 </Buttons>
               </Form>
-              <Form onSubmit={(e) => e.preventDefault()}>
+
+              <Form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                }}
+              >
                 <H2>サインイン</H2>
+
                 <FormContent>
-                  <Row>
-                    <label style={{ flexGrow: 2 }}>
-                      <Heading>トークン</Heading>
-                      <TextBox
-                        type="text"
-                        value={token}
-                        onChange={(e) => setToken(e.target.value)}
-                      />
-                    </label>
-                  </Row>
+                  <label>
+                    <Heading>トークン</Heading>
+                    <TextBox
+                      type="text"
+                      value={token}
+                      onChange={(e) => setToken(e.target.value)}
+                    />
+                  </label>
                 </FormContent>
+
                 <Buttons>
-                  <Button onClick={signin}>サインイン</Button>
+                  <Button type="button" onClick={signin}>
+                    サインイン
+                  </Button>
                 </Buttons>
               </Form>
             </FormWrapper>

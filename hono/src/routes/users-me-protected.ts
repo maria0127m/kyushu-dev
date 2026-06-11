@@ -2,6 +2,7 @@ import { Hono } from "hono";
 import { z } from "zod";
 import { zValidator } from "@hono/zod-validator";
 import { v4 as uuidv4 } from "uuid";
+import { getCookie } from "hono/cookie";
 
 import { fetchUser, updateUser } from "../libs/db/user";
 import {
@@ -80,6 +81,21 @@ usersMeProtected.patch(
       listed,
       displaysPast,
     });
+  }
+);
+
+// 現在のトークンを表示
+usersMeProtected.get(
+  "/token/current",
+  authMiddleware(true, "cookie"),
+  async (c) => {
+    const idToken = getCookie(c, "token");
+
+    if (!idToken) {
+      return c.json({ error: "Token not found", type: "TOKEN_NOT_FOUND" }, 401);
+    }
+
+    return c.text(idToken);
   }
 );
 

@@ -177,3 +177,17 @@ export const postSignout = async () => {
     return error();
   }
 };
+
+export const fetchCurrentToken = async () => {
+  try {
+    const response = await fetch("/api/users/me/token/current");
+
+    if (!response.ok) {
+      return error();
+    }
+
+    return success(await response.text());
+  } catch {
+    return error();
+  }
+};
