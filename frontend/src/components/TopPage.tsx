@@ -2,7 +2,12 @@ import { useEffect, useRef, useState } from "react";
 import styled from "@emotion/styled";
 import { Link } from "react-router";
 
-import { type UserWithLatestCheckin, fetchAllUsers } from "../libs/api";
+import {
+  type User,
+  type UserWithLatestCheckin,
+  fetchAllUsers,
+  fetchUserMe,
+} from "../libs/api";
 import { StatusCircle } from "./utils";
 import tsukuba from "../assets/tsukuba2.webp";
 
@@ -23,6 +28,26 @@ const ListLink = styled(Link)`
   padding: 4px 0;
 
   &:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+`;
+
+const NavButtons = styled.nav`
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 0 0 24px 0;
+
+  a {
+    color: inherit;
+    text-decoration: none;
+    padding: 6px 10px;
+    border: solid 1px #eee;
+    border-radius: 999px;
+  }
+
+  a:hover {
     text-decoration: underline;
     text-underline-offset: 4px;
   }
@@ -53,7 +78,8 @@ const grayToIndex = (gray: number) => {
 
 const TopPage = () => {
   const [allUsers, setAllUsers] = useState<UserWithLatestCheckin[]>([]);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [me, setMe] = useState<User | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -61,8 +87,13 @@ const TopPage = () => {
       if (result.type === "success") {
         setAllUsers(result.value);
       }
+
+      const meResult = await fetchUserMe();
+      if (meResult.type === "success") {
+        setMe(meResult.value);
+      }
     })();
-  }, [location]);
+  }, []);
 
   useEffect(() => {
     (async () => {
@@ -70,9 +101,11 @@ const TopPage = () => {
       if (!targetCanvas) {
         return;
       }
+
       const targetScale = 300;
       targetCanvas.width = 5 * targetScale;
       targetCanvas.height = 2 * targetScale;
+
       const targetCtx = targetCanvas.getContext("2d");
       if (!targetCtx) {
         return;
@@ -86,12 +119,14 @@ const TopPage = () => {
         const orgScale = 30;
         canvas.width = 5 * orgScale;
         canvas.height = 2 * orgScale;
+
         ctx?.drawImage(img, 0, 0, canvas.width, canvas.height);
 
         const imageData = ctx?.getImageData(0, 0, canvas.width, canvas.height);
         if (!imageData) {
           return;
         }
+
         const data = imageData.data;
         const fontSize = Math.floor(targetCanvas.width / canvas.width);
         targetCtx.font = `${fontSize}px "Noto Sans Mono"`;
@@ -105,8 +140,10 @@ const TopPage = () => {
             const gray = (data[i] + data[i + 1] + data[i + 2]) / 3 / 255;
             const d = grayToIndex(gray);
             const char = charMap[d];
+
             const x0 = (targetCanvas.width / canvas.width) * x;
             const y0 = (targetCanvas.height / canvas.height) * y;
+
             targetCtx.fillText(char, x0, y0);
           }
         }
@@ -117,35 +154,44 @@ const TopPage = () => {
   }, []);
 
   return (
-    <main>
-      <Canvas ref={canvasRef} />
-      <H3>みんなのきろく</H3>
+    <>
+      <NavButtons>
+        <Link to="/">ホーム</Link>
+        {me && <Link to={`/@${me.screenName}`}>自分のページ</Link>}
+        <a href="#everyone">みんなの記録</a>
+      </NavButtons>
+
+      <H3 id="everyone">みんなのきろく</H3>
+
       <List>
         {allUsers.map((user) => {
           const status =
             user.latestLocationId === "kyudai"
               ? "internal"
               : user.latestLocationId === "others"
-              ? "others"
-              : "inactive";
+                ? "others"
+                : "inactive";
+
           const statusText =
             status === "internal"
               ? "九州大学"
               : status === "others"
-              ? "学外"
-              : "不明";
+                ? "学外"
+                : "不明";
+
           return (
-            <li key={user.id}>
+            <li key={user.screenName}>
               <ListLink to={`/@${user.screenName}`}>
                 <StatusCircle status={status} />
-                {user.name}（@{user.screenName}） 現在：
-                {statusText}
+                {user.name}（@{user.screenName}） 現在：{statusText}
               </ListLink>
             </li>
           );
         })}
       </List>
-    </main>
+
+      <Canvas ref={canvasRef} />
+    </>
   );
 };
 
