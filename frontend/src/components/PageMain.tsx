@@ -24,6 +24,8 @@ const NavButtons = styled.nav`
   gap: 12px;
   flex-wrap: wrap;
   margin: 0 0 24px 0;
+  padding-top: 16px;
+  border-top: solid 1px #eee;
 
   a,
   button {

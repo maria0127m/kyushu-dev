@@ -130,6 +130,8 @@ const TopPage = () => {
   return (
     <>
       
+      <Canvas ref={canvasRef} />
+      
       <H3 id="everyone">みんなのきろく</H3>
 
       <List>
@@ -159,7 +161,7 @@ const TopPage = () => {
         })}
       </List>
 
-      <Canvas ref={canvasRef} />
+      
     </>
   );
 };
