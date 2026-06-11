@@ -10,9 +10,9 @@ https://kyushu-dev.kyudai.workers.dev
 
 このリポジトリは [`inaniwaudon/tsukuba-yokohama-dev`](https://github.com/inaniwaudon/tsukuba-yokohama-dev) をもとに、九州大学向けに設定を変更したものです。
 
-## これは何？
+## 概要
 
-九州大学の学内ネットワークから定期的にチェックインすることで、各ユーザーが現在九州大学内にいるかどうかを記録・表示する Web アプリです。
+九州大学の学内ネットワークから定期的にチェックインすることで、各ユーザーが現在九州大学内にいるかどうかを記録・表示する Web サイトです。
 <br />
 <div align="center"> 
  <img width="600" alt="個人ページの表示例" src="https://github.com/user-attachments/assets/a14e5902-7d41-4f59-a0e0-295cb4539d40" />
