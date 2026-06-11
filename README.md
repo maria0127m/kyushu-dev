@@ -13,7 +13,7 @@ https://kyushu-dev.kyudai.workers.dev
 ## これは何？
 
 九州大学の学内ネットワークから定期的にチェックインすることで、各ユーザーが現在九州大学内にいるかどうかを記録・表示する Web アプリです。
-<img width="1072" height="566" alt="個人ページの表示例" src="https://github.com/user-attachments/assets/a14e5902-7d41-4f59-a0e0-295cb4539d40" />
+<img width="700" height="300" alt="個人ページの表示例" src="https://github.com/user-attachments/assets/a14e5902-7d41-4f59-a0e0-295cb4539d40" />
 
 <p><small>　オレンジ：学内ネットワークを検知　／　グレー：学内ネットワーク以外のIPアドレスを検知　／　薄いグレー：記録なし</small></p>
 
