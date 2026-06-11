@@ -21,8 +21,8 @@ https://kyushu-dev.kyudai.workers.dev
  <p><small>　オレンジ：学内　／　グレー：学外　／　グレー：記録なし   </small></p>
  </span>
 </div>
-
-
+　
+　
 各ユーザーのページは以下の形式で表示されます。
 
 ```text
