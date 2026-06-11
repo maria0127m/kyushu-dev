@@ -99,7 +99,9 @@ https://kyushu-dev.kyudai.workers.dev/@murai
 
 ## 手動でチェックインする方法
 
-ターミナル、PowerShell、コマンドプロンプトなどから、以下を実行します。
+### macOS / Linux / Git Bash の場合
+
+ターミナルで以下を実行します。
 
 ```bash
 curl -X POST "https://kyushu-dev.kyudai.workers.dev/api/checkins" \
@@ -108,11 +110,15 @@ curl -X POST "https://kyushu-dev.kyudai.workers.dev/api/checkins" \
 
 `<YOUR_TOKEN>` は、自分のトークンに置き換えてください。
 
-Windows の PowerShell では、`curl` ではなく `curl.exe` を使う方が安全です。
+### Windows PowerShell の場合
+
+Windows PowerShell では、`curl` ではなく `curl.exe` を使う方が安全です。
 
 ```powershell
 curl.exe -X POST "https://kyushu-dev.kyudai.workers.dev/api/checkins" -H "Authorization: <YOUR_TOKEN>"
 ```
+
+`<YOUR_TOKEN>` は、自分のトークンに置き換えてください。
 
 成功すると、以下のような返答が返ります。
 
@@ -121,6 +127,7 @@ curl.exe -X POST "https://kyushu-dev.kyudai.workers.dev/api/checkins" -H "Author
 ```
 
 そのあと自分のページを再読み込みすると、最終更新時刻が変わります。
+
 
 ## Windowsで自動チェックインする方法
 
