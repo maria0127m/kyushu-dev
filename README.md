@@ -14,7 +14,13 @@ https://kyushu-dev.kyudai.workers.dev
 
 九州大学の学内ネットワークから定期的にチェックインすることで、各ユーザーが現在九州大学内にいるかどうかを記録・表示する Web アプリです。
 <img width="1072" height="566" alt="image" src="https://github.com/user-attachments/assets/a14e5902-7d41-4f59-a0e0-295cb4539d40" />
+![個人ページの表示例](./docs/user-page-example.png)
 
+**表示の見方**
+
+- 🟠 オレンジ：九州大学内からチェックインした時間
+- ⚪ グレー：学外からチェックインした時間
+- 薄いグレー：チェックイン記録なし
 
 各ユーザーのページは以下の形式で表示されます。
 
