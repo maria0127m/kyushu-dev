@@ -21,6 +21,7 @@ export const setCookieToken = (c: Context, idToken: string) => {
     secure: true,
     maxAge: 60 * 60 * 24 * 30, // 30 日間保持
     sameSite: "strict",
+    path: "/",
   });
 };
 

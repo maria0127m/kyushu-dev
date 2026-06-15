@@ -152,7 +152,7 @@ export const postSignin = async (token: string) => {
     const response = await fetch("/api/users/me/signin", {
       method: "POST",
       headers: {
-        authorization: token,
+        authorization: token.trim(),
       },
     });
     if (!response.ok) {

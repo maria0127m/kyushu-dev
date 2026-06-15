@@ -105,6 +105,9 @@ usersMePublic.post(
 
 // サインアウト
 usersMePublic.post("/signout", async (c) => {
-  deleteCookie(c, "token", { secure: true });
+  deleteCookie(c, "token", {
+    secure: true,
+    path: "/",
+  });
   return c.body(null, 204);
 });
